@@ -1,10 +1,12 @@
+export PATH	:=	$(DEVKITARM)/bin:$(PATH)
+
 rwildcard = $(foreach d, $(wildcard $1*), $(filter $(subst *, %, $2), $d) $(call rwildcard, $d/, $2))
 
 CC := arm-none-eabi-gcc
 AS := arm-none-eabi-as
 LD := arm-none-eabi-ld
 OC := arm-none-eabi-objcopy
-PYTHON := python2
+PYTHON := python
 OPENSSL := openssl
 
 dir_source := source
@@ -44,8 +46,9 @@ rops := $(dir_build)/mset_4x/rop.dat $(dir_build)/spider_4x/rop.dat \
 		$(dir_build)/spider_5x/rop.dat $(dir_build)/spider_9x/rop.dat
 
 patch_files := $(dir_out)/cakes/patches/signatures.cake \
-			   $(dir_out)/cakes/patches/emunand.cake \
-	           $(dir_out)/cakes/patches/reboot.cake
+				$(dir_out)/cakes/patches/emunand.cake \
+				$(dir_out)/cakes/patches/reboot.cake \
+				$(dir_out)/cakes/patches/dhs.cake \
 
 provide_files := $(dir_out)/firmware_bin.here \
 				 $(dir_out)/slot0x25keyX_bin.here \

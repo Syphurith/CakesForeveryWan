@@ -11,6 +11,7 @@ void menu_main()
 {
     while (1) {
         char *options[] = {"Boot CFW with sig patches, emunand and reboot",
+                           "Boot CFW with sig patches, emunand with DHS and reboot",
                            "Boot CFW with sig patches and emunand",
                            "Boot CFW with sig patches"};
         int result = draw_menu("Main menu", 0, sizeof(options) / sizeof(char *), options);
@@ -19,10 +20,13 @@ void menu_main()
             case 0:
                 boot_cfw(2);
                 break;
-            case 1:
+			case 1:
+				boot_cfw(3);
+				break;
+            case 2:
                 boot_cfw(1);
                 break;
-            case 2:
+            case 3:
                 boot_cfw(0);
                 break;
         }

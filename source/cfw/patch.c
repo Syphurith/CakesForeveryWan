@@ -8,6 +8,9 @@
 #include "firm.h"
 #include "fatfs/sdmmc.h"
 
+#define DHS_PATCH_COMPAT_DATA
+#include "../../tools/dhs/include/dhs_patch/dhs_patch_compat.h"
+
 struct patch_header {
     uint8_t count: 8;
     uint8_t patches_offset: 8;
@@ -191,15 +194,31 @@ int patch_firm(char *filename)
 
 int patch_firm_all(int patch_level)
 {
-    if (patch_firm("/cakes/patches/signatures.cake") != 0) return 1;
+	int res = 0;
+	switch(patch_level)
+	{
+		case 3:
+			if((res = patch_firm("/cakes/patches/dhs.cake")) == 0)
+			{
+				// Load the patch/hooks to itcm
+				void* itcm = (void*)0x01FF8000;
+				
+				if (read_file(itcm, "/dhs_patch.bin", 0x1000) == 0) {
+					print("dhs_patch loaded to itcm");
+					memcpy(itcm + 4, &dhs_a9_compat_49, sizeof(dhs_a9_compat_s));
+				}
+				else {
+					print("Failed to open dhs_patch.bin");
+				}
+			}
+		case 2:
+			res = res ? res : patch_firm("/cakes/patches/reboot.cake");
+		case 1:
+			res = res ? res : patch_firm("/cakes/patches/emunand.cake");
+		case 0:
+			res = res ? res : patch_firm("/cakes/patches/signatures.cake");
+			break;
+	}
 
-    if (patch_level >= 1) {
-        if (patch_firm("/cakes/patches/emunand.cake") != 0) return 1;
-
-        if (patch_level >= 2) {
-            if (patch_firm("/cakes/patches/reboot.cake") != 0) return 1;
-        }
-    }
-
-    return 0;
+	return res;
 }
