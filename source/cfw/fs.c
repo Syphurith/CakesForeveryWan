@@ -5,7 +5,7 @@
 
 static FATFS fs;
 
-void mount_sd()
+void mount_sd(void)
 {
     if (f_mount(&fs, "0:", 1) == FR_OK) {
         print("Mounted SD card");
@@ -14,7 +14,7 @@ void mount_sd()
     }
 }
 
-void unmount_sd()
+void unmount_sd(void)
 {
     f_mount((void *)0, "0:", 1);
     print("Unmounted SD card");
@@ -27,20 +27,18 @@ int read_file_offset(void *dest, const char *path, unsigned int size, unsigned i
     unsigned int bytes_read = 0;
 
     fr = f_open(&handle, path, FA_READ);
-    if (fr != FR_OK) return 1;
-
+    if (fr != FR_OK) goto report;
     if (offset) {
         fr = f_lseek(&handle, offset);
-        if (fr != FR_OK) return 1;
+        if (fr != FR_OK) goto report;
     }
-
     fr = f_read(&handle, dest, size, &bytes_read);
-    if (fr != FR_OK) return 1;
-
+    if (fr != FR_OK) goto report;
     fr = f_close(&handle);
-    if (fr != FR_OK) return 1;
-
-    return 0;
+    if (fr != FR_OK) return fr;
+report:
+    f_close(&handle);   // This must be closed first.
+    return fr;
 }
 
 int write_file(const void *buffer, const char *path, unsigned int size)
@@ -50,13 +48,15 @@ int write_file(const void *buffer, const char *path, unsigned int size)
     unsigned int bytes_written = 0;
 
     fr = f_open(&handle, path, FA_WRITE | FA_OPEN_ALWAYS);
-    if (fr != FR_OK) return 1;
+    if (fr != FR_OK) goto report;
 
     fr = f_write(&handle, buffer, size, &bytes_written);
-    if (fr != FR_OK || bytes_written != size) return 1;
+    if (fr != FR_OK || bytes_written != size) goto report;
 
     // This for some reason always returns an error
     f_close(&handle);
-
+    if (fr != FR_OK) return fr;
+report:
+    f_close(&handle);   // This must be closed first.
     return 0;
 }

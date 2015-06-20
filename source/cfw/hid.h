@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+extern const volatile uint16_t *hid_regs;
+
 enum keys {
     key_a = 0b000000000001,
     key_b = 0b000000000010,
