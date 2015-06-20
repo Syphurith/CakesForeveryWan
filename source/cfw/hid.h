@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-extern const volatile uint16_t *hid_regs;
-
 enum keys {
     key_a = 0b000000000001,
     key_b = 0b000000000010,
@@ -22,6 +20,7 @@ enum keys {
     key_pressed = 0b1000000000000000
 };
 
-uint16_t wait_key();
+uint16_t wait_key(void);
+uint16_t get_key(void);
 
 #endif

@@ -38,7 +38,7 @@ void main(void)
     } else {
         if (boot_option <= MENU_MAIN_VALID_MAX) {
             // Think it as valid.
-            if (*hid_regs) {
+            if (get_key()) {
                 // Any key is still held when started.
                 menu_main();
             } else {

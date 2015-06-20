@@ -148,6 +148,7 @@ $(dir_build)/spider_9x/main.elf: $(objects_spider_9x)
 
 $(dir_build)/patches/%/*.cake: $(dir_patches)/%
 	@mkdir -p $(@D)
+	#Here is a problem due to your paths.
 	sh -c "cd $(@D); armips $(dir_top)/$</patches.s"
 	sh -c "cd $(@D); armips $(dir_top)/$</bundle.s"
 
